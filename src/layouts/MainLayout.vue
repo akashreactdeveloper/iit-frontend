@@ -403,26 +403,53 @@
                   <div class="flex gap-4">
                     <div class="flex-1">
                       <label
-                        for="username"
+                        for="firstname"
                         class="text-primary-50 font-semibold text-white"
-                        >Username</label
+                        >First Name</label
                       >
                       <InputText
-                        id="username"
+                        id="firstname"
                         class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-full !text-white"
-                        v-model="username"
+                        v-model="firstname"
                       />
                     </div>
                     <div class="flex-1">
                       <label
-                        for="email"
+                        for="lastname"
+                        class="text-primary-50 font-semibold text-white"
+                        >Last Name</label
+                      >
+                      <InputText
+                        id="lastname"
+                        class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-full !text-white"
+                        v-model="lastname"
+                      />
+                    </div>
+                  </div>
+                  <!-- Username & Email on the same row -->
+                  <div class="flex gap-4">
+                    <div class="flex-1">
+                      <label
+                        for="signupusername"
+                        class="text-primary-50 font-semibold text-white"
+                        >Username</label
+                      >
+                      <InputText
+                        id="signupusername"
+                        class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-full !text-white"
+                        v-model="signupusername"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <label
+                        for="signupemail"
                         class="text-primary-50 font-semibold text-white"
                         >Email</label
                       >
                       <InputText
-                        id="email"
+                        id="signupemail"
                         class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-full !text-white"
-                        v-model="email"
+                        v-model="signupemail"
                       />
                     </div>
                   </div>
@@ -430,15 +457,15 @@
                   <div class="flex gap-4">
                     <div class="flex-1">
                       <label
-                        for="password"
+                        for="signuppassword"
                         class="text-primary-50 font-semibold text-white"
                         >Password</label
                       >
                       <InputText
-                        id="password"
+                        id="signuppassword"
                         class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-full !text-white"
-                        type="password"
-                        v-model="password"
+                        type="signuppassword"
+                        v-model="signuppassword"
                       />
                     </div>
                     <div class="flex-1">
@@ -476,7 +503,12 @@
                   />
                   <Button
                     label="Sign Up"
-                    @click="handleSignup"
+                    @click="
+                      () => {
+                        closeCallback();
+                        handleSignup();
+                      }
+                    "
                     text
                     class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10 !text-white"
                   />
@@ -518,18 +550,50 @@ export default defineComponent({
     const loginVisible = ref(false);
     const signupVisible = ref(false);
     const username = ref("");
+    const signupusername = ref("akash53464");
     const email = ref("");
     const password = ref("");
-    const confirmPassword = ref("");
+    const signupemail = ref("akas3h@gmail.com");
+    const signuppassword = ref("12345");
+    const confirmPassword = ref("12345");
+    const firstname = ref("Akash");
+    const lastname = ref("Kumar");
+    const usertype = ref("Student");
 
-    const handleSignup = () => {
-      if (password.value !== confirmPassword.value) {
+    const handleSignup = async () => {
+      if (signuppassword.value !== confirmPassword.value) {
         alert("Passwords do not match");
-        return;
+      } else {
+        try {
+          const response = await axios.post(`${API_URL}register/`, {
+            first_name: firstname.value,
+            last_name: lastname.value,
+            username: signupusername.value,
+            email: signupemail.value,
+            password: signuppassword.value,
+            user_type : usertype.value
+          });
+
+
+          console.log("Response data:", response.data);
+        } catch (error) {
+          // Handle errors
+          if (error.response) {
+            console.error("Error response:", error.response.data);
+            alert("Login failed: " + error.response.data.detail);
+          } else if (error.request) {
+            console.error("No response received:", error.request);
+            alert("No response from server.");
+          } else {
+            // Something else caused the error
+            console.error("Error:", error.message);
+            alert("An error occurred.");
+          }
+        }
+        signupVisible.value = false;
       }
-      console.log("Signing up:", username.value, email.value, password.value);
-      signupVisible.value = false;
     };
+
     const handleLogin = async () => {
       try {
         const response = await axios.post(`${API_URL}login/`, {
@@ -674,6 +738,12 @@ export default defineComponent({
       handleLogin,
       handleLogout,
       Cookies,
+      signupusername,
+      signupemail,
+      signuppassword,
+      firstname,
+      lastname,
+      usertype
     };
   },
 });

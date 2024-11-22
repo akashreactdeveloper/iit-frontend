@@ -9,6 +9,7 @@ import LoginPage from '../pages/LoginPage.vue';
 import AdminHome from '../admin/AdminHome.vue';
 import AdminCourses from '../admin/AdminCourses.vue';
 import CourseCreation from '../admin/CourseCreation.vue';
+import SuperHome from '../superadmin/SuperHome.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,6 +25,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'loginpage',
         name: 'LoginPage',
         component: LoginPage,
+      },
+      {
+        path: 'superhome',
+        name: 'SuperHome',
+        component: SuperHome,
       },
       {
         path: 'adminHome',
