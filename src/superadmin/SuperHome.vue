@@ -1,10 +1,18 @@
 <template>
-  <div class="flex flex-cols">
-    <div class="card flex-1 bg-white rounded-3xl">
-       <div class="flex justify-between mx-5">
-        <h1 class="text-2xl my-4 uppercase ">Institutes</h1>
-        <button>Add new Institute</button>
-       </div> 
+  <div class="flex flex-wrap justify-between gap-6 p-4">
+    <div class="card flex-1 bg-white rounded-3xl max-w-full">
+      <div class="flex justify-between mx-5">
+        <h1 class="text-2xl my-4 uppercase font-bold text-gray-700">
+          Institutes
+        </h1>
+        <Button
+          label="Add New Institute"
+          icon="pi pi-plus"
+          @click="openPosition('bottom')"
+          severity="secondary"
+          style="min-width: 10rem"
+        />
+      </div>
       <DataTable
         v-model:editingRows="editingRows"
         :value="products"
@@ -12,7 +20,104 @@
         dataKey="id"
         @row-edit-save="onRowEditSave"
         :pt="{
-          table: { style: 'min-width: 50rem' },
+          table: {
+            style: 'min-width: 100%; max-width: 100%; overflow-x: auto;',
+          },
+          column: {
+            bodycell: ({ state }) => ({
+              style: state['d_editing']
+                ? 'padding-top: 0.75rem; padding-bottom: 0.75rem'
+                : '',
+            }),
+          },
+        }"
+        paginator
+        :rows="5"
+      >
+        <Column field="name" header="Name" style="width: 20%" />
+        <Column field="status" header="Status" style="width: 20%" />
+        <Column field="description" header="Description" style="width: 40%" />
+        <Column field="url" header="URL" style="width: 40%" />
+        <Column
+          :rowEditor="true"
+          style="width: 10%"
+          bodyStyle="text-align:center"
+        />
+      </DataTable>
+    </div>
+
+    <Dialog
+      v-model:visible="visible"
+      header="Add New Institute"
+      :style="{ width: '25rem' }"
+      :position="position"
+      :modal="true"
+      :draggable="false"
+    >
+      <span class="text-surface-500 dark:text-surface-400 block mb-8"
+        >Enter the Details of Institute</span
+      >
+      <div class="flex items-center gap-4 mb-4">
+        <label for="institutename" class="font-semibold w-24">Name</label>
+        <InputText
+          id="institutename"
+          v-model="institutename"
+          class="flex-auto"
+          autocomplete="off"
+        />
+      </div>
+      <div class="flex items-center gap-4 mb-8">
+        <label for="institutedescription" class="font-semibold w-24"
+          >Description</label
+        >
+        <Textarea v-model="institutedescription" rows="5" cols="30" />
+      </div>
+      <div class="flex items-center gap-4 mb-8">
+        <label for="instituteurl" class="font-semibold w-24">Url</label>
+        <InputText
+          id="instituteurl"
+          v-model="instituteurl"
+          class="flex-auto"
+          autocomplete="off"
+        />
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button
+          type="button"
+          label="Cancel"
+          severity="secondary"
+          @click="visible = false"
+        ></Button>
+        <Button
+          type="button"
+          label="Create"
+          @click="
+            addInstitute();
+            visible = false;
+          "
+        ></Button>
+      </div>
+    </Dialog>
+
+    <div class="card flex-1 bg-white rounded-3xl max-w-full">
+      <div class="flex justify-between mx-5">
+        <h1 class="text-2xl my-4 uppercase font-bold text-gray-700">Staff</h1>
+        <button
+          class="px-2 border-2 bg-green-300 rounded-2xl text-green-900 hover:scale-110 transition-all"
+        >
+          Add new Staff
+        </button>
+      </div>
+      <DataTable
+        v-model:editingRows="editingRows"
+        :value="staffData"
+        editMode="row"
+        dataKey="id"
+        @row-edit-save="onRowEditSave"
+        :pt="{
+          table: {
+            style: 'min-width: 100%; max-width: 100%; overflow-x: auto;',
+          },
           column: {
             bodycell: ({ state }) => ({
               style: state['d_editing']
@@ -22,67 +127,23 @@
           },
         }"
       >
-        <Column field="name" header="Name" style="width: 20%">
-          <template #editor="{ data, field }">
-            <InputText v-model="data[field]" fluid />
-          </template>
-        </Column>
-        <Column field="status" header="Status" style="width: 20%">
-          <template #editor="{ data, field }">
-            <Select
-              v-model="data[field]"
-              :options="statuses"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select a Status"
-              fluid
-            >
-              <template #option="slotProps">
-                <Tag
-                  :value="slotProps.option.value"
-                  :severity="getStatusLabel(slotProps.option.value)"
-                />
-              </template>
-            </Select>
-          </template>
-          <template #body="slotProps">
-            <Tag
-              :value="slotProps.data.status"
-              :severity="getStatusLabel(slotProps.data.status)"
-            />
-          </template>
-        </Column>
-        <Column field="description" header="Description" style="width: 40%">
-          <template #editor="{ data, field }">
-            <InputText v-model="data[field]" fluid />
-          </template>
-        </Column>
-        <Column field="url" header="URL" style="width: 40%">
-          <template #editor="{ data, field }">
-            <InputText v-model="data[field]" fluid />
-          </template>
-        </Column>
+        <Column field="username" header="Name" style="width: 20%" />
+        <Column field="phone" header="Phone" style="width: 20%" />
+        <Column field="email" header="Email" style="width: 40%" />
+        <Column field="user_type" header="Role" style="width: 40%" />
+        <Column
+          field="
+institution
+"
+          header="Institute"
+          style="width: 20%"
+        />
         <Column
           :rowEditor="true"
-          style="width: 10%; min-width: 8rem"
+          style="width: 10%"
           bodyStyle="text-align:center"
         />
       </DataTable>
-    </div>
-    <div class="card flex-1">
-
-    </div>
-
-    <div>
-      <input type="text" v-model="institutename" placeholder="Institute Name" />
-      <input
-        type="text"
-        v-model="institutedescription"
-        placeholder="Institute Description"
-      />
-      <input type="text" v-model="url" placeholder="URL" />
-      <button @click="addInstitute">Add Institute</button>
-      <button @click="getInstitute">Get Institute</button>
     </div>
   </div>
 </template>
@@ -97,6 +158,8 @@ import Select from "primevue/selectbutton";
 import Tag from "primevue/tag";
 import Cookies from "js-cookie"; // Import js-cookie
 import API_URL from "../../constants.js";
+import Textarea from "primevue/textarea";
+import Dialog from "primevue/dialog";
 
 // Define interfaces for data to make it type-safe
 interface Institute {
@@ -120,12 +183,17 @@ export default defineComponent({
     InputText,
     Select,
     Tag,
+    Dialog,
+    Textarea,
   },
   setup() {
     const products = ref<Institute[]>([]); // type products as Institute array
-    const editingRows = ref<any[]>([]);
     const institutename = ref<string>("");
+    const editingRows = ref<any[]>([]);
+    const staffData = ref<any[]>([]);
+    const staffinstitute = ref<string>("");
     const institutedescription = ref<string>("");
+    const instituteurl = ref<string>("");
     const url = ref<string>("");
     const statuses = ref<StatusOption[]>([
       { label: "Verified", value: "VERIFIED" },
@@ -140,6 +208,14 @@ export default defineComponent({
       if (statusCode === 1) return "VERIFIED";
       if (statusCode === -1) return "BANNED";
       return "UNVERIFIED"; // for 0 or other values
+    };
+
+    const position = ref("center");
+    const visible = ref(false);
+
+    const openPosition = (pos) => {
+      position.value = pos;
+      visible.value = true;
     };
 
     // Function to handle editing of rows
@@ -184,6 +260,22 @@ export default defineComponent({
         alert("Error fetching institutes.");
       }
     };
+    const getStaff = async () => {
+      try {
+        const response = await axios.get(`${API_URL}login/`, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("access_token")}`,
+          },
+        });
+
+        const staffdata = response.data.users;
+        console.log("Staff data:", staffdata);
+        staffData.value = staffdata;
+      } catch (error) {
+        console.error("Error fetching institutes:", error);
+        alert("Error fetching institutes.");
+      }
+    };
 
     // Add a new institute
     const addInstitute = async () => {
@@ -193,7 +285,7 @@ export default defineComponent({
           {
             name: institutename.value,
             description: institutedescription.value,
-            url: "http://" + url.value,
+            url: instituteurl.value,
           },
           {
             headers: {
@@ -212,6 +304,7 @@ export default defineComponent({
 
     onMounted(() => {
       getInstitute(); // Fetch institutes on mount
+      getStaff();
     });
 
     return {
@@ -226,6 +319,13 @@ export default defineComponent({
       Cookies,
       url,
       getInstitute,
+      openPosition,
+      position,
+      visible,
+      instituteurl,
+      staffinstitute,
+      getStaff,
+      staffData,
     };
   },
 });

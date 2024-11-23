@@ -1,6 +1,6 @@
 <template>
   <div class="flex col-span-2 space-x-8">
-    <div class="w-3/4 h-screen">
+    <!-- <div class="w-3/4 h-screen">
       <div class="bg-white h-32 rounded-xl">
         <h1 class="pl-2 pt-1 text-gray-600 font-bold">Announcements</h1>
         <div class="card">
@@ -70,21 +70,94 @@
           </div>
         </div>
       </div>
+    </div> -->
+
+    <div class="card w-3/4">
+      <Splitter style="height: 1000px" layout="vertical">
+        <SplitterPanel class="flex items-center justify-center overflow-auto p-4">
+          <DataView :value="courses" layout="list" class="w-full h-full">
+            <template #list="slotProps">
+              <!-- Access individual item and index from slotProps -->
+              <div v-for="(item, index) in slotProps.items" :key="index">
+                <div
+                  class="p-card border rounded-lg shadow-sm p-4 flex justify-between items-center w-full"
+                >
+                  <!-- Left Section -->
+                  <div class="flex items-center space-x-4">
+                    <img
+                      src="https://via.placeholder.com/64x64.png"
+                      alt="Course Icon"
+                      class="rounded-md"
+                    />
+                    <div>
+                      <p class="text-sm text-gray-500">Course</p>
+                      <h4 class="text-lg font-semibold text-gray-800">
+                        {{ item.name }}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <!-- Right Section -->
+                  <div class="flex items-center space-x-6">
+                    <div class="flex flex-col items-center">
+                      <p class="text-sm text-gray-500">Content</p>
+                      <p class="text-base text-gray-800 font-medium">5</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                      <p class="text-sm text-gray-500">Completion</p>
+                      <p class="text-base text-gray-800 font-medium">-</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                      <p class="text-sm text-gray-500">Deadline</p>
+                      <p class="text-base text-gray-800 font-medium">1 Day</p>
+                    </div>
+                    <Button label="Resume" class="p-button p-button-sm" />
+                  </div>
+                </div>
+              </div>
+            </template>
+          </DataView>
+        </SplitterPanel>
+        <SplitterPanel class="flex items-center justify-center">
+          Panel 2
+        </SplitterPanel>
+      </Splitter>
     </div>
+
     <div class="w-1/4 bg-white rounded-xl">
       <div class="flex justify-center">
-        <DatePicker v-model="date" inline showWeek class="w-full sm:w-[30rem] p-5 h-96" />
+        <DatePicker
+          v-model="date"
+          inline
+          showWeek
+          class="w-full sm:w-[30rem] p-5 h-96"
+        />
       </div>
       <div class="flex justify-center">
         <div>
-          <h1 class="font-bold text-gray-700 ">Schedule</h1>
+          <h1 class="font-bold text-gray-700">Schedule</h1>
         </div>
       </div>
       <div class="card m-4">
         <DataTable :value="products" tableStyle="min-width: 100%">
-          <Column field="code" header="Subject Code" sortable style="width: 40%"></Column>
-          <Column field="subject" header="Subject" sortable style="width: 30%"></Column>
-          <Column field="date" header="Date" sortable style="width: 30%"></Column>
+          <Column
+            field="code"
+            header="Subject Code"
+            sortable
+            style="width: 40%"
+          ></Column>
+          <Column
+            field="subject"
+            header="Subject"
+            sortable
+            style="width: 30%"
+          ></Column>
+          <Column
+            field="date"
+            header="Date"
+            sortable
+            style="width: 30%"
+          ></Column>
         </DataTable>
       </div>
     </div>
@@ -92,24 +165,28 @@
 </template>
 
 <script lang="ts">
-import 'primeicons/primeicons.css';
-import Accordion from 'primevue/accordion';
-import AccordionPanel from 'primevue/accordionpanel';
-import AccordionHeader from 'primevue/accordionheader';
-import AccordionContent from 'primevue/accordioncontent';
-import Card from 'primevue/card';
-import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
-import ProgressBar from 'primevue/progressbar';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-import DatePicker from 'primevue/datepicker';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import ColumnGroup from 'primevue/columngroup';   // optional
-import Row from 'primevue/row';                   // optional
+import "primeicons/primeicons.css";
+import Accordion from "primevue/accordion";
+import AccordionPanel from "primevue/accordionpanel";
+import AccordionHeader from "primevue/accordionheader";
+import AccordionContent from "primevue/accordioncontent";
+import Card from "primevue/card";
+import { defineComponent, ref, onMounted, onBeforeUnmount } from "vue";
+import ProgressBar from "primevue/progressbar";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
+import DatePicker from "primevue/datepicker";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import ColumnGroup from "primevue/columngroup"; // optional
+import Row from "primevue/row"; // optional
+import Splitter from "primevue/splitter";
+import SplitterPanel from "primevue/splitterpanel";
+import DataView from "primevue/dataview";
+import CoursesSlider from "../components/CoursesSlider.vue";
 
 export default defineComponent({
-  name: 'Home',
+  name: "Home",
   components: {
     Accordion,
     AccordionPanel,
@@ -123,6 +200,9 @@ export default defineComponent({
     Column,
     ColumnGroup,
     Row,
+    Splitter,
+    SplitterPanel,
+    DataView,
   },
   setup() {
     const value1 = ref(0);
@@ -146,6 +226,14 @@ export default defineComponent({
       }
     };
 
+    const courses = ref([
+      { id: 1, name: "C++", price: "$1.00" },
+      { id: 2, name: "Java", price: "$0.50" },
+      { id: 3, name: "Statistics", price: "$1.20" },
+      { id: 4, name: "Linear Algebra", price: "$2.00" },
+      { id: 5, name: "C#", price: "$1.50" },
+    ]);
+
     onMounted(() => {
       startProgress();
     });
@@ -156,23 +244,23 @@ export default defineComponent({
 
     const date = ref(new Date());
     const formatDate = (date: Date) => {
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = date.getFullYear();
       return `${day}/${month}/${year}`;
     };
 
     const formattedDate = ref(formatDate(date.value));
-    const subjectName1 = ref('Mathematics');
-    const subjectName2 = ref('Physics');
-    const subjectName3 = ref('Chemistry');
-    const subjectName4 = ref('Biology');
+    const subjectName1 = ref("Mathematics");
+    const subjectName2 = ref("Physics");
+    const subjectName3 = ref("Chemistry");
+    const subjectName4 = ref("Biology");
     const products = ref([
-      { code: 'A1', subject: 'Product 1', date: formattedDate },
-      { code: 'A2', subject: 'Product 2', date: formattedDate },
-      { code: 'A3', subject: 'Product 3', date: formattedDate },
-      { code: 'A4', subject: 'Product 4', date: formattedDate },
-      { code: 'A5', subject: 'Product 5', date: formattedDate }
+      { code: "A1", subject: "Product 1", date: formattedDate },
+      { code: "A2", subject: "Product 2", date: formattedDate },
+      { code: "A3", subject: "Product 3", date: formattedDate },
+      { code: "A4", subject: "Product 4", date: formattedDate },
+      { code: "A5", subject: "Product 5", date: formattedDate },
     ]);
 
     return {
@@ -182,8 +270,9 @@ export default defineComponent({
       subjectName3,
       subjectName4,
       date,
-      products
+      products,
+      courses,
     };
-  }
+  },
 });
 </script>
